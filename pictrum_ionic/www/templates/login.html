@@ -1,0 +1,33 @@
+<ion-view hide-nav-bar="true">
+  <ion-content>
+    <div class="center" style="margin-top: 40px;">
+      <img ng-src="img/ionic.png" id="login-image">
+    </div>  
+    <div class="list" style="margin-top: 20px;">
+      <label class="item item-input">
+        <span class="input-label">Username:</span>
+        <input type="text" ng-model="user.username">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">Password:</span>
+        <input type="password" ng-model="user.password">
+      </label>
+    </div>
+    <div class="padding">
+         <button class="button button-block button-positive" ng-click="loginEmail()">
+            Login
+        </button>
+        <button class="button button-block button-positive" ng-click="register()">
+            Register
+        </button>
+        <button class="button button-block" ng-click="loginFacebook()">
+            <i class='ion-social-facebook larger' style="margin-right: 3%;"></i> Login with Facebook
+        </button>
+    </div>
+    <div>
+      <p>
+        {{platform}}
+      </p>
+    </div>
+  </ion-content>
+</ion-view> 

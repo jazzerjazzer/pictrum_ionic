@@ -1,0 +1,38 @@
+<ion-view title="">
+          <ion-nav-buttons side="right"> 
+          <button class="button button-icon icon ion-ios-arrow-right icon-right" ng-click="startApp()" ng-show="slideIndex == 2"> Start using MyApp
+          </button>
+        </ion-nav-buttons>
+  <ion-slide-box on-slide-changed="slideChanged(index)">
+    <ion-slide>
+      <h3>Jukebox Feature</h3>
+      <div id="logo">
+        <img src="http://code.ionicframework.com/assets/img/app_icon.png">
+      </div>
+      <p>
+        You can select your music, vote for lists etc.
+      </p>
+      <p>
+        Check it out!
+      </p>
+    </ion-slide>
+    <ion-slide>
+      <h3>Meet & Greet</h3>
+      
+      <div id="list">
+        <h5>Just three steps:</h5>
+        <ol>
+          <li>Go to Meet & Greet</li>
+          <li>Type your message</li>
+          <li>Start chatting</li>
+        </ol>
+      </div>
+    </ion-slide>
+    <ion-slide>
+      <h3>Upload photo</h3>
+      <p>
+        Upload your photo with one click, see it on the screens! 
+      </p>
+    </ion-slide>
+  </ion-slide-box>
+</ion-view>
