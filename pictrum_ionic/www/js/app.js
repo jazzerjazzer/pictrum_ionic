@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
+angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngStorage', 'ion-profile-picture'])
 
 /*.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -54,7 +54,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     console.warn("You need to insert your own APP ID and JAVASCRIPT KEY from Parse.");
     Parse.initialize("pu1ooGpu4cfi8OlDFHX01kGrT81IeokjfcFJ2Jm5", "Zd7UqkSSSiHwNbYEkdFUGaSBEygzLIj1FCFKiJvO");
 
-    if(!(ionic.Platform.isIOS() || ionic.Platform.isAndroid())){
+    //if(!(ionic.Platform.isIOS() || ionic.Platform.isAndroid())){
       window.fbAsyncInit = function() {
           Parse.FacebookUtils.init({
               appId      : '608860305923719', 
@@ -70,7 +70,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
          js.src = "//connect.facebook.net/en_US/sdk.js";
          fjs.parentNode.insertBefore(js, fjs);
        }(document, 'script', 'facebook-jssdk'));
-    }
+    //}
     
   });
 })
@@ -102,7 +102,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
             templateUrl: 'templates/menu.html'
         })
         .state('menu.main', {
-            url: 'main',
+            url: '/main',
             views: {
                 'menuContent': {
                     templateUrl: 'templates/main.html',
@@ -110,7 +110,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
             }
           },
         })
-
+        .state('menu.profile', {
+            url: '/profile/',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/profile.html',
+                    controller: 'ProfileCtrl'
+            }
+          },
+        })
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/login');
 });

@@ -91,7 +91,7 @@ angular.module('starter.controllers', [])
 	}
 })*/
 
-.controller('LoginCtrl', function($scope, $state, $cordovaFacebook) {
+.controller('LoginCtrl', function($scope, $state, $cordovaFacebook, $localStorage) {
   
   $scope.platform = ionic.Platform.platform();
 
@@ -120,10 +120,15 @@ angular.module('starter.controllers', [])
   $scope.loginFacebook = function(){
 
     //Browser Login
-    if(!(ionic.Platform.isIOS() || ionic.Platform.isAndroid())){
+    //if(!(ionic.Platform.isIOS() || ionic.Platform.isAndroid())){
       Parse.FacebookUtils.logIn(null, {
         success: function(user) {
-          console.log(user);
+          	console.log(user);
+
+			var access_token = JSON.parse(user._hashedJSON.authData);
+			console.log("Access Token: ",  access_token.facebook.access_token);
+			$localStorage.accessToken =  access_token.facebook.access_token;
+
           if (!user.existed()) {
             alert("User signed up and logged in through Facebook!");
             $state.go('menu.main');
@@ -137,9 +142,9 @@ angular.module('starter.controllers', [])
         }
       });
 
-    } 
+    //} 
     //Native Login
-    else {
+    /*else {
 
       $cordovaFacebook.login(["public_profile", "email"]).then(function(success){
 
@@ -175,7 +180,7 @@ angular.module('starter.controllers', [])
         console.log(error);
       });
 
-    }
+    }*/
 
   };
 
@@ -242,3 +247,33 @@ angular.module('starter.controllers', [])
 .controller('MainCtrl', function($scope) {
 
 })
+.controller("ProfileCtrl", function($scope, $http, $localStorage, $location) {
+ 	console.log("profileCtrl");
+    $scope.init = function() {
+        if($localStorage.hasOwnProperty("accessToken") === true) {
+        	console.log("access token in profile ctrl", $localStorage.accessToken);
+            $http.get("https://graph.facebook.com/v2.2/me", { params: { access_token: $localStorage.accessToken, fields: "id,name,gender,location,website,picture,relationship_status", format: "json" }}).then(function(result) {
+                $scope.profileData = result.data;
+                console.log(result.data);
+                $scope.base64 = getBase64Image($scope.profileData.picture.data.url);
+
+            }, function(error) {
+                alert("There was a problem getting your profile.  Check the logs for details.");
+                console.log(error);
+            });
+        } else {
+            alert("Not signed in");
+            $location.path("/login");
+        }
+    };
+
+    function getBase64Image(img) {
+	  var canvas = document.createElement("canvas");
+	  canvas.width = img.width;
+	  canvas.height = img.height;
+	  var dataURL = canvas.toDataURL("image/png");
+	  return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+	}
+
+	
+});
