@@ -90,6 +90,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngStora
             controller: 'RegisterCtrl'
         })
 
+        /*.state('photos', {
+            url: '/photos',
+            templateUrl: 'templates/photos.html',
+            controller: 'PhotoCtrl'
+        })*/
+
         .state('slider', {
             url: '/slider',
             templateUrl: 'templates/slider.html',
@@ -110,6 +116,38 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngStora
             }
           },
         })
+        .state('menu.albums', {
+            url: '/albums',
+            views:{
+            'menuContent': {
+              templateUrl: 'templates/albums.html',
+              controller: 'AlbumCtrl'
+            }
+          }
+        })
+        .state('photos', {
+            url: '/photos/:albumID',
+            templateUrl: 'templates/photos.html',
+            controller: 'PhotoCtrl'
+        })
+        /*.state('menu.main.albums', {
+          url: '/albums',
+          views:{
+            'albums': {
+              templateUrl: 'templates/albums.html',
+              controller: 'AlbumCtrl'
+            }
+          }
+        })
+        .state('menu.main.photos', {
+          url: '/photos',
+          views:{
+            'photos': {
+              templateUrl: 'templates/photos.html',
+              controller: 'PhotoCtrl'
+            }
+          }
+        })*/
         .state('menu.profile', {
             url: '/profile/',
             views: {
@@ -120,5 +158,5 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova', 'ngStora
           },
         })
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/login');
+    $urlRouterProvider.otherwise('/login');
 });

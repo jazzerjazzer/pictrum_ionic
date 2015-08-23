@@ -91,7 +91,7 @@ angular.module('starter.controllers', [])
 	}
 })*/
 
-.controller('LoginCtrl', function($scope, $state, $cordovaFacebook, $localStorage) {
+.controller('LoginCtrl', function($scope, $state, $cordovaFacebook, $localStorage, $ionicLoading) {
   
   $scope.platform = ionic.Platform.platform();
 
@@ -101,17 +101,22 @@ angular.module('starter.controllers', [])
 		password: ""
 	};
 	$scope.loginEmail = function(){
+		
+		$ionicLoading.show({
+			template: 'Please wait...'
+		});
+
 		console.log($scope.user.username, $scope.user.password);
 		Parse.User.logIn($scope.user.username, $scope.user.password, {
 				success: function(user) {
 				// Do stuff after successful login.
-				console.log(user);
-				alert("success!");
-				$state.go('menu.main');
+				$state.go('menu.albums');
+				$ionicLoading.hide();
 			},
 				error: function(user, error) {
 				// The login failed. Check error to see why.
 				alert("error!");
+				$ionicLoading.hide();
 			}
 		});
 	};
@@ -121,6 +126,9 @@ angular.module('starter.controllers', [])
 
     //Browser Login
     //if(!(ionic.Platform.isIOS() || ionic.Platform.isAndroid())){
+    	$ionicLoading.show({
+			template: 'Please wait...'
+		});
       Parse.FacebookUtils.logIn(null, {
         success: function(user) {
           	console.log(user);
@@ -130,14 +138,18 @@ angular.module('starter.controllers', [])
 			$localStorage.accessToken =  access_token.facebook.access_token;
 
           if (!user.existed()) {
-            alert("User signed up and logged in through Facebook!");
-            $state.go('menu.main');
+            console.log("User signed up and logged in through Facebook!");
+            //$state.go('menu.main');
+            $state.go('menu.albums');
           } else {
-            alert("User logged in through Facebook!");
-            $state.go('menu.main');
+            console.log("User logged in through Facebook!");
+            //$state.go('menu.main');
+            $state.go('menu.albums');
           }
+          $ionicLoading.hide();
         },
         error: function(user, error) {
+          $ionicLoading.hide();
           alert("User cancelled the Facebook login or did not fully authorize.");
         }
       });
@@ -247,12 +259,70 @@ angular.module('starter.controllers', [])
 .controller('MainCtrl', function($scope) {
 
 })
+.controller('PhotoCtrl', function($scope, $ionicHistory) {
+
+
+	/*$scope.photoSelect = function(){
+		var fileUploadControl = $("#profilePhotoFileUpload")[0];
+		if (fileUploadControl.files.length > 0) {
+			var file = fileUploadControl.files[0];
+			var name = file.name;
+			var parseFile = new Parse.File(name, file);
+			
+			parseFile.save().then(function() {
+				// The file has been saved to Parse.
+				alert("Photo saved");
+				var photoUpload = new Parse.Object("photo");
+				photoUpload.set("name", name);
+				photoUpload.save();
+
+				var profilePhoto = photo.get("photoFile");
+				$("profileImg")[0].src = profilePhoto.url();
+
+			}, function(error) {
+				alert("Photo cannot be saved");
+				// The file either could not be read, or could not be saved to Parse.
+			});
+		}
+	}*/
+
+	$scope.images = [];
+ 
+    for(var i = 0; i < 100; i++) {
+        $scope.images.push({id: i, src: "http://placehold.it/50x50"});
+    }
+
+    $scope.goBack = function() {
+		$ionicHistory.goBack();
+	};
+    
+})
+.controller('AlbumCtrl', function($scope, $ionicModal) {
+
+	$scope.showAlbumDetails = function(albumID) {
+		$state.go('photos', {'albumID': albumID});
+	}
+	$ionicModal.fromTemplateUrl('templates/newAlbumModal.html', {
+		scope: $scope
+			}).then(function(modal) {
+		$scope.modal = modal;
+	});
+  
+  $scope.createContact = function(u) {        
+    $scope.contacts.push({ name: u.firstName + ' ' + u.lastName });
+    $scope.modal.hide();
+  };
+
+})
 .controller("ProfileCtrl", function($scope, $http, $localStorage, $location) {
  	console.log("profileCtrl");
     $scope.init = function() {
         if($localStorage.hasOwnProperty("accessToken") === true) {
         	console.log("access token in profile ctrl", $localStorage.accessToken);
-            $http.get("https://graph.facebook.com/v2.2/me", { params: { access_token: $localStorage.accessToken, fields: "id,name,gender,location,website,picture,relationship_status", format: "json" }}).then(function(result) {
+            $http.get("https://graph.facebook.com/v2.2/me", { params: { 
+            	access_token: $localStorage.accessToken, 
+            	fields: "id,name,gender,location,website,picture,relationship_status", 
+            	format: "json" }}).then(function(result) {
                 $scope.profileData = result.data;
                 console.log(result.data);
                 $scope.base64 = getBase64Image($scope.profileData.picture.data.url);
@@ -266,14 +336,4 @@ angular.module('starter.controllers', [])
             $location.path("/login");
         }
     };
-
-    function getBase64Image(img) {
-	  var canvas = document.createElement("canvas");
-	  canvas.width = img.width;
-	  canvas.height = img.height;
-	  var dataURL = canvas.toDataURL("image/png");
-	  return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-	}
-
-	
 });
