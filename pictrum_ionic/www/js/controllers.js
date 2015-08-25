@@ -299,6 +299,9 @@ angular.module('starter.controllers', [])
 })
 .controller('AlbumCtrl', function($scope, $ionicModal) {
 
+	$scope.albums =[];
+	var user = Parse.User.current();
+
 	$scope.showAlbumDetails = function(albumID) {
 		$state.go('photos', {'albumID': albumID});
 	}
@@ -308,10 +311,54 @@ angular.module('starter.controllers', [])
 		$scope.modal = modal;
 	});
   
-  $scope.createContact = function(u) {        
-    $scope.contacts.push({ name: u.firstName + ' ' + u.lastName });
-    $scope.modal.hide();
+	$scope.createAlbum = function(newAlbum) {        
+  		console.log(newAlbum.albumName);
+		var Album = Parse.Object.extend("album");
+		var album = new Album();
+
+		var relation = album.relation("user");
+		relation.add(user);
+
+		album.set("name", newAlbum.albumName);
+
+		album.save(null, {
+			success: function(album) {
+				// Execute any logic that should take place after the object is saved.
+				alert('New object created with objectId: ' + album.id);
+			},
+			error: function(album, error) {
+				// Execute any logic that should take place if the save fails.
+				// error is a Parse.Error with an error code and message.
+				alert('Failed to create new object, with error code: ' + error.message);
+			}
+		});
   };
+
+	function retrieveAlbums(){
+		
+		var Album = Parse.Object.extend("album");
+		var query = new Parse.Query(Album);
+
+		query.equalTo("user", user);
+
+		query.find({
+		  success: function(results) {
+		    for (var i = 0; i < results.length; i++) {
+		    	var object = results[i];
+		    	var retrievedAlbum = {
+		    		name: object.get("name"),
+		    		thumbnmail: object.get("thumbnail"),
+		    		people: object.get("people")
+		    	}
+				$scope.albums.push(retrievedAlbum);
+		    }
+		  },
+		  error: function(error) {
+		    alert("Error: " + error.code + " " + error.message);
+		  }
+		});
+	}
+	retrieveAlbums();
 
 })
 .controller("ProfileCtrl", function($scope, $http, $localStorage, $location) {
